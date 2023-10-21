@@ -3,7 +3,8 @@
 from typing import TYPE_CHECKING
 
 from bson import ObjectId
-from fastapi import APIRouter, Body, WebSocket
+from bson.errors import InvalidId
+from fastapi import APIRouter, Body, WebSocket, WebSocketException, status
 from starlette.websockets import WebSocketDisconnect
 
 from dice_be.dependencies import playground
@@ -61,7 +62,11 @@ async def websocket_endpoint(code: Code, websocket: WebSocket):
 
     user_id = (await websocket.receive_json())['id']
 
-    user: User = await get_user_by_id(ObjectId(user_id))
+    try:
+        user: User = await get_user_by_id(ObjectId(user_id))
+    except InvalidId as e:
+        raise WebSocketException(code=status.WS_1002_PROTOCOL_ERROR, reason=str(e))
+
     game: GameManager = playground.get_game(code)
 
     await game.handle_connect(user, websocket)

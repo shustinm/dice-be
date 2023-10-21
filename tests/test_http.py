@@ -1,5 +1,6 @@
 import pytest
 
+from fastapi import WebSocket
 from fastapi.testclient import TestClient
 
 from dice_be.__main__ import app
@@ -18,7 +19,25 @@ def game(http_client: TestClient):
     return GameData(**game_info.json())
 
 
+@pytest.fixture
+def user1(http_client):
+    users = http_client.get('/users/')
+    yield users.json()
+
+@pytest.fixture
+def player1(http_client: TestClient, game: GameData, user1):
+    print(user1)
+    with http_client.websocket_connect(f'/games/{game.code}/ws/') as ws:
+        ws.send_json({'id': 'test'})
+        yield ws.receive_json()
+
 def test_game_creation(game: GameData):
     assert game.event == 'game_update'
     assert len(game.code) == 4 and game.code.isnumeric()
     assert game.progression == GameProgression.LOBBY == 'lobby'
+
+
+
+def test_game_join(player1):
+    print(player1)
+
