@@ -3,7 +3,9 @@
 from typing import List
 
 from odmantic import Model, ObjectId
+from sqlmodel import Field, SQLModel
 
+from dice_be.dependencies import engine
 
 # pylint: disable=abstract-method
 class User(Model):
@@ -11,3 +13,9 @@ class User(Model):
 
     name: str
     friend_ids: List[ObjectId] = []
+
+
+class NUser(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+

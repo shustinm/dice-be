@@ -2,7 +2,7 @@
 import random
 from collections import Counter
 from enum import Enum
-from typing import List, Literal, TypeAlias
+from typing import List, Literal, TypeAlias, Annotated
 
 from bson import ObjectId
 from pydantic import Field, NonNegativeInt, conint
@@ -11,7 +11,8 @@ from dice_be.models.users import User
 from dice_be.models.utils import OID, MongoModel
 
 Code: TypeAlias = str
-Dice: TypeAlias = conint(ge=1, le=6)
+Dice = Annotated[int, Field(ge=1, le=6)]
+
 JOKER_DICE = 1
 
 

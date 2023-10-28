@@ -42,3 +42,5 @@ class Playground:
             code = f'{randint(1, 9999):04}'
 
         return code
+
+playground = Playground()

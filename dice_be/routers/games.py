@@ -7,7 +7,7 @@ from bson.errors import InvalidId
 from fastapi import APIRouter, Body, WebSocket, WebSocketException, status
 from starlette.websockets import WebSocketDisconnect
 
-from dice_be.dependencies import playground
+from dice_be.managers.playground import playground
 from dice_be.exceptions import GameNotFound
 from dice_be.models.games import Code, GameData, GameProgression, GameRules
 from dice_be.routers.users import get_user_by_id

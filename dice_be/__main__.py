@@ -3,9 +3,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from sqlmodel import SQLModel
 
 from dice_be.exceptions import NotFoundHttpError
 from dice_be.routers import games, users
+from dice_be.dependencies import engine
+
+from dice_be.models import users as usermodels
 
 app = FastAPI()
 
@@ -41,3 +45,10 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
+
+
+if '__main__' in __name__:
+    SQLModel.metadata.create_all(engine)
+else:
+    print(f'{__name__=}')
+

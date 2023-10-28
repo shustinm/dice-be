@@ -15,6 +15,7 @@ bidict = "^0.22.0"
 pydantic = "^1.10.2"
 loguru = "^0.6.0"
 fastapi = {version = ">=0.99,<1.0", extras = ["all"]}
+sqlmodel = "^0.0.10"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^2.15.5"
