@@ -16,13 +16,16 @@ pydantic = "^1.10.2"
 loguru = "^0.6.0"
 fastapi = {version = ">=0.99,<1.0", extras = ["all"]}
 sqlmodel = "^0.0.10"
+mongomock-motor = "^0.0.21"
+beanie = "^1.23.1"
+setuptools = "^68.2.2"
+anyio = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^2.15.5"
 pytest = "^7.2.0"
 httpx = "^0.25.0"
 requests = "^2.31.0"
-anyio = "<4"
 
 [tool.pylint]
     [tool.pylint.'FORMAT']

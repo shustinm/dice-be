@@ -4,9 +4,8 @@ from fastapi import WebSocket
 from fastapi.testclient import TestClient
 
 from dice_be.__main__ import app
-from dice_be.models.games import GameRules, GameData, GameProgression
+from dice_be.models.games import Code, GameRules, GameData, GameProgression
 from dice_be.models.users import User
-from dice_be.dependencies import Code
 
 @pytest.fixture
 def http_client():
