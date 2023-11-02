@@ -3,12 +3,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from fastapi.openapi.docs import get_swagger_ui_html
 from beanie import init_beanie
 from mongomock_motor import AsyncMongoMockClient
 
 
 from dice_be.exceptions import NotFoundHttpError
 from dice_be.routers import games, users
+from dice_be.models.users import NUser
 
 app = FastAPI()
 

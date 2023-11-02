@@ -5,9 +5,10 @@ from enum import Enum
 from typing import List, Literal, TypeAlias, Annotated
 
 from bson import ObjectId
-from pydantic import Field, NonNegativeInt, conint
+from uuid import UUID, uuid4
+from pydantic import Field, NonNegativeInt, conint, BaseModel
 
-from dice_be.models.users import User
+from dice_be.models.users import User, NUser
 from dice_be.models.utils import OID, MongoModel
 
 Code: TypeAlias = str
@@ -24,14 +25,14 @@ class GameProgression(str, Enum):
     IN_GAME = 'in_game'
 
 
-class PlayerData(MongoModel):
-    id: OID = Field(default_factory=lambda: OID(ObjectId()))
+class PlayerData(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
     name: str = ""
     dice: List[Dice] = []
     current_dice_count: NonNegativeInt = 0
     ready: bool = False
-    left_player_id: OID = None
-    right_player_id: OID = None
+    left_player_id: UUID  | None = None
+    right_player_id: UUID | None = None
 
     def roll_dice(self) -> 'PlayerData':
         self.dice = [random.randint(1, 6) for _ in range(self.current_dice_count)]
@@ -68,7 +69,7 @@ class GameData(MongoModel):
     rules: GameRules = GameRules()
     players: list[PlayerData] = []
 
-    def add_player(self, player: User):
+    def add_player(self, player: NUser):
         self.players.append(player := PlayerData(id=player.id, name=player.name))
         return player
 
