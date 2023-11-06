@@ -3,7 +3,7 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from dice_be.models.game_events import Event, RoundStart
+from dice_be.models.game_events import Event, RoundStart, PlayerReady
 from dice_be.models.games import PlayerData, GameData
 
 
@@ -17,6 +17,12 @@ def test_strict_pydantic():
     j = {'player_dice': [1, 2, 3]}
     with pytest.raises(ValidationError):
         _ = Event.parse_obj(j)
+
+def test_ready_event():
+    rdy = PlayerReady()
+    event = Event.parse_obj(rdy.dict()).__root__
+    assert event.event == 'player_ready'
+    assert event.ready is True
 
 
 def test_game_data():

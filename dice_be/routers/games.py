@@ -6,6 +6,8 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import APIRouter, Body, WebSocket, WebSocketException, status
 from starlette.websockets import WebSocketDisconnect
+from loguru import logger
+from uuid import UUID
 
 from dice_be.managers.playground import playground
 from dice_be.exceptions import GameNotFound
@@ -50,7 +52,6 @@ async def check_player_in_game(code: str, user_id: str):
     return ObjectId(user_id) in playground.get_game(code).player_mapping
 
 
-# pylint:disable=redefined-builtin, invalid-name
 @router.websocket('/{code}/ws/')
 async def websocket_endpoint(code: Code, websocket: WebSocket):
     """API to join a game.
@@ -60,10 +61,13 @@ async def websocket_endpoint(code: Code, websocket: WebSocket):
     """
     await websocket.accept()
 
-    user_id = (await websocket.receive_json())['id']
+    try:
+        user_id = UUID((await websocket.receive_json())['id'])
+    except ValueError as e:
+        raise WebSocketException(code=status.WS_1002_PROTOCOL_ERROR, reason=str(e))
 
     try:
-        user: User = await get_user_by_id(ObjectId(user_id))
+        user: User = await get_user_by_id(user_id)
     except InvalidId as e:
         raise WebSocketException(code=status.WS_1002_PROTOCOL_ERROR, reason=str(e))
 
@@ -73,7 +77,10 @@ async def websocket_endpoint(code: Code, websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
-            await game.handle_json(user, data)
+            try:
+                await game.handle_json(user, data)
+            except TypeError as e:
+                raise WebSocketException(code=status.WS_1002_PROTOCOL_ERROR, reason=str(e))
     except WebSocketDisconnect:
         # Client disconnected
         await game.handle_disconnect(user)

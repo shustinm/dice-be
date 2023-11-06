@@ -1,7 +1,7 @@
 import pytest
 from mongomock_motor import AsyncMongoMockClient
 
-from dice_be.models.users import NUser
+from dice_be.models.users import User
 
 
 pytestmark = pytest.mark.anyio
@@ -19,7 +19,7 @@ async def test_mock_client(mock_client: AsyncMongoMockClient):
 
 
 async def test_engine():
-    user = await NUser(name='hello').create()
+    user = await User(name='hello').create()
     assert user.name == 'hello'
-    assert await NUser.find_all().to_list() == [user]
+    assert await User.find_all().to_list() == [user]
 

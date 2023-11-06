@@ -2,7 +2,7 @@ import pytest
 
 from mongomock_motor import AsyncMongoMockClient
 
-from dice_be.models.users import NUser
+from dice_be.models.users import User
 from beanie import init_beanie
 
 pytestmark = pytest.mark.anyio
@@ -17,4 +17,4 @@ async def mock_client():
 
 @pytest.fixture(autouse=True)
 async def engine(mock_client):
-    yield await init_beanie(database=mock_client.db_name, document_models=[NUser])  # pyright: ignore
+    yield await init_beanie(database=mock_client.db_name, document_models=[User])  # pyright: ignore

@@ -4,12 +4,10 @@ from collections import Counter
 from enum import Enum
 from typing import List, Literal, TypeAlias, Annotated
 
-from bson import ObjectId
 from uuid import UUID, uuid4
-from pydantic import Field, NonNegativeInt, conint, BaseModel
+from pydantic import Field, NonNegativeInt, BaseModel
 
-from dice_be.models.users import User, NUser
-from dice_be.models.utils import OID, MongoModel
+from dice_be.models.users import User
 
 Code: TypeAlias = str
 Dice = Annotated[int, Field(ge=1, le=6)]
@@ -54,13 +52,13 @@ class PlayerData(BaseModel):
         return False
 
 
-class GameRules(MongoModel):
+class GameRules(BaseModel):
     initial_dice_count: int = 5
     paso_allowed: bool = True
     exact_allowed: bool = True
 
 
-class GameData(MongoModel):
+class GameData(BaseModel):
     """Data of an active game."""
 
     event: Literal['game_update']
@@ -69,9 +67,9 @@ class GameData(MongoModel):
     rules: GameRules = GameRules()
     players: list[PlayerData] = []
 
-    def add_player(self, player: NUser):
-        self.players.append(player := PlayerData(id=player.id, name=player.name))
-        return player
+    def add_player(self, player: User):
+        self.players.append(new_player := PlayerData(id=player.id, name=player.name))
+        return new_player
 
     def remove_player(self, player: User):
         for p in self.players:

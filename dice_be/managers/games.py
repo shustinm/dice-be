@@ -1,6 +1,6 @@
 """Game logic management."""
 
-from bson import ObjectId
+from uuid import UUID
 from fastapi import WebSocket
 
 from dice_be.managers.connection import ConnectionManager
@@ -31,7 +31,7 @@ class GameManager:
 
     def __init__(self, code: Code, game_rules: GameRules) -> None:
         self.game_data = GameData(event='game_update', code=code, rules=game_rules)
-        self.player_mapping: dict[ObjectId, PlayerData] = {}
+        self.player_mapping: dict[UUID, PlayerData] = {}
         self.connection_manager = ConnectionManager()
 
     async def handle_json(self, player: User, data: dict):
@@ -39,6 +39,10 @@ class GameManager:
         :param player: The player who sent the data
         :param data: Parsed json object.
         """
+
+        if not isinstance(data, dict):
+            raise TypeError(f'Received json of a {type(data)}, expected dict')
+
         event = Event.parse_obj(data).__root__
 
         match event:
@@ -102,6 +106,8 @@ class GameManager:
         player: User,
         data: PlayerReady,
     ) -> tuple[bool, str | None]:
+        if not (data.right_player_id and data.left_player_id):
+            return True, None
         # Player is setting himself ready, check for validity of right and left players
         for other_player in self.player_mapping.values():
             # Skip checking against the same players or against unready players
@@ -109,13 +115,13 @@ class GameManager:
                 continue
 
             if other_player.right_player_id == data.right_player_id:
-                right_player = self.player_mapping[ObjectId(data.right_player_id)]
+                right_player = self.player_mapping[data.right_player_id]
                 return (
                     False,
                     f'{right_player.name} is already to the right of {other_player.name}',
                 )
             elif other_player.left_player_id == data.left_player_id:
-                left_player = self.player_mapping[ObjectId(data.left_player_id)]
+                left_player = self.player_mapping[data.left_player_id]
                 return (
                     False,
                     f'{left_player.name} is already to the left of {other_player.name}',

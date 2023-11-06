@@ -2,6 +2,8 @@
 
 from random import randint
 
+from loguru import logger
+
 from dice_be.exceptions import GameNotFound
 from dice_be.managers.games import GameManager
 from dice_be.models.games import Code, GameRules
@@ -21,6 +23,7 @@ class Playground:
         :return: The code of the game (used for joining).
         """
         code = self._generate_code()
+        logger.debug(f'Creating game {code}')
         self.current_games[code] = GameManager(code, game_rules)
         return code
 

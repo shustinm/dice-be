@@ -1,4 +1,5 @@
 """Main execution point for Dice Backend."""
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,10 +8,9 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from beanie import init_beanie
 from mongomock_motor import AsyncMongoMockClient
 
-
 from dice_be.exceptions import NotFoundHttpError
 from dice_be.routers import games, users
-from dice_be.models.users import NUser
+from dice_be.models.users import User
 
 app = FastAPI()
 
@@ -30,7 +30,7 @@ app.add_exception_handler(NotFoundHttpError, NotFoundHttpError.handler)
 @app.on_event('startup')
 async def startup_event():
     motor = AsyncMongoMockClient()
-    await init_beanie(database=motor.db_name, document_models=[NUser])  # pyright: ignore
+    await init_beanie(database=motor.db_name, document_models=[User])  # pyright: ignore
 
 
 def custom_openapi():

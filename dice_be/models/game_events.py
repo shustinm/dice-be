@@ -1,41 +1,41 @@
 from enum import Enum
-from typing import List, Literal, Union
+from typing import List, Literal, Union, Annotated
+from uuid import UUID
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from dice_be.models.games import Dice, GameData, GameRules, PlayerData
-from dice_be.models.utils import OID, MongoModel
 
 
-class PlayerReady(MongoModel):
+class PlayerReady(BaseModel):
     """Signals to the server that the player is ready
     Broadcast from server.
     """
 
-    event: Literal['player_ready']
-    ready: bool
-    left_player_id: OID
-    right_player_id: OID
+    event: Literal['player_ready'] = 'player_ready'
+    ready: bool = True
+    left_player_id: UUID | None = None
+    right_player_id: UUID | None = None
 
 
-class ReadyConfirm(MongoModel):
+class ReadyConfirm(BaseModel):
     event: Literal['ready_confirm'] = 'ready_confirm'
     success: bool
-    error: str = None
+    error: str | None = None
 
 
-class PlayerLeave(MongoModel):
+class PlayerLeave(BaseModel):
     """Signals to the server that the player is leaving."""
 
     event: Literal['player_leave']
 
 
-class GameStart(MongoModel):
+class GameStart(BaseModel):
     event: Literal['game_start'] = 'game_start'
     rules: GameRules
 
 
-class RoundStart(MongoModel):
+class RoundStart(BaseModel):
     event: Literal['round_start'] = 'round_start'
     dice: List[Dice]
 
@@ -50,22 +50,22 @@ class AccusationType(str, Enum):
     Paso = 'paso'
 
 
-class Accusation(MongoModel):
+class Accusation(BaseModel):
     event: Literal['accusation']
     type: AccusationType
-    accused_player: OID
-    dice_value: int = None
-    dice_count: int = None
+    accused_player: UUID
+    dice_value: int | None = None
+    dice_count: int | None = None
 
 
-class RoundEnd(MongoModel):
+class RoundEnd(BaseModel):
     event: Literal['round_end'] = 'round_end'
-    winner: OID
-    loser: OID
+    winner: UUID
+    loser: UUID
     correct_accusation: bool
     accusation_type: AccusationType
-    dice_value: int = None
-    dice_count: int = None
+    dice_value: int | None = None
+    dice_count: int | None = None
     joker_count: int = None
     players: str
 
@@ -92,8 +92,8 @@ class RoundEnd(MongoModel):
         )
 
 
-class Event(MongoModel):
-    __root__: Union[PlayerReady, PlayerLeave, Accusation] = Field(
+class Event(BaseModel):
+    __root__: Annotated[Union[PlayerReady, PlayerLeave, Accusation], Field(
         ...,
         discriminator='event',
-    )
+    )]
