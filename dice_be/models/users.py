@@ -10,4 +10,3 @@ class User(Document):
     id: UUID = Field(default_factory=uuid4)
     name: str
     friends: list[UUID] = []
-

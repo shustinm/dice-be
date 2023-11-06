@@ -27,7 +27,7 @@ class ReadyConfirm(BaseModel):
 class PlayerLeave(BaseModel):
     """Signals to the server that the player is leaving."""
 
-    event: Literal['player_leave']
+    event: Literal['player_leave'] = 'player_leave'
 
 
 class GameStart(BaseModel):
@@ -93,7 +93,10 @@ class RoundEnd(BaseModel):
 
 
 class Event(BaseModel):
-    __root__: Annotated[Union[PlayerReady, PlayerLeave, Accusation], Field(
-        ...,
-        discriminator='event',
-    )]
+    __root__: Annotated[
+        Union[PlayerReady, PlayerLeave, Accusation],
+        Field(
+            ...,
+            discriminator='event',
+        ),
+    ]

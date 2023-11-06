@@ -29,7 +29,7 @@ class PlayerData(BaseModel):
     dice: List[Dice] = []
     current_dice_count: NonNegativeInt = 0
     ready: bool = False
-    left_player_id: UUID  | None = None
+    left_player_id: UUID | None = None
     right_player_id: UUID | None = None
 
     def roll_dice(self) -> 'PlayerData':

@@ -1,10 +1,8 @@
 """Main execution point for Dice Backend."""
-import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from fastapi.openapi.docs import get_swagger_ui_html
 from beanie import init_beanie
 from mongomock_motor import AsyncMongoMockClient
 
@@ -26,6 +24,7 @@ app.include_router(users.router)
 app.include_router(games.router)
 
 app.add_exception_handler(NotFoundHttpError, NotFoundHttpError.handler)
+
 
 @app.on_event('startup')
 async def startup_event():
@@ -51,4 +50,3 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
-

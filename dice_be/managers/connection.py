@@ -56,7 +56,9 @@ class ConnectionManager:
             msg = f'Client {client} is not connected'
             raise LookupError(msg) from e
 
-    async def broadcast(self, data: str | dict | BaseModel, *, exclude: User | None = None):
+    async def broadcast(
+        self, data: str | dict | BaseModel, *, exclude: User | None = None
+    ):
         """Broadcast a message to all clients."""
         exclude_ids = {exclude.id} if exclude else {}
 

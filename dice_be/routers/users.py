@@ -3,8 +3,6 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Body
-from odmantic import ObjectId
-from sqlmodel import Session, select
 
 from dice_be.exceptions import IDNotFound
 from dice_be.models.users import User
@@ -44,7 +42,7 @@ async def create_user(name: str = Body(..., embed=True)) -> User:
     '/{id}/',
     responses=IDNotFound.response(),
     name='Get User by ID',
-    response_model_by_alias=True
+    response_model_by_alias=True,
 )
 async def get_user_by_id_endpoint(id: UUID) -> User:
     """Retrieve a single user by their ID."""
@@ -52,7 +50,9 @@ async def get_user_by_id_endpoint(id: UUID) -> User:
 
 
 # pylint:disable=redefined-builtin, invalid-name
-@router.post('/{id}/friends/', responses=IDNotFound.response(), response_model_by_alias=True)
+@router.post(
+    '/{id}/friends/', responses=IDNotFound.response(), response_model_by_alias=True
+)
 async def add_friends(id: UUID, friends: List[UUID] = Body(..., embed=True)) -> User:
     """Add a multiple friends to a single user by their IDs."""
     raise NotImplementedError

@@ -6,7 +6,6 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import APIRouter, Body, WebSocket, WebSocketException, status
 from starlette.websockets import WebSocketDisconnect
-from loguru import logger
 from uuid import UUID
 
 from dice_be.managers.playground import playground
@@ -80,7 +79,9 @@ async def websocket_endpoint(code: Code, websocket: WebSocket):
             try:
                 await game.handle_json(user, data)
             except TypeError as e:
-                raise WebSocketException(code=status.WS_1002_PROTOCOL_ERROR, reason=str(e))
+                raise WebSocketException(
+                    code=status.WS_1002_PROTOCOL_ERROR, reason=str(e)
+                )
     except WebSocketDisconnect:
         # Client disconnected
         await game.handle_disconnect(user)
